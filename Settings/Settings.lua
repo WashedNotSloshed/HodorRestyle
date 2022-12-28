@@ -2,10 +2,14 @@ local LAM = LibAddonMenu2
 local HR = HodorRestyle
 local LH = LibHyper
 
+local screenWidth, screenHeight = GuiRoot:GetDimensions()
+
 local function updateFont()
     local container = HodorRestyleContainer:GetNamedChild('container')
     local damageLabel = container:GetNamedChild('damageLabel')
+    local timer = container:GetNamedChild('timer')
     damageLabel:SetFont(HR.savedVariables.fontStyle.."|"..tostring(HR.savedVariables.fontSize).."|"..HR.savedVariables.fontWeight)
+    timer:SetFont(HR.savedVariables.fontStyle.."|"..tostring(HR.savedVariables.fontSize).."|"..HR.savedVariables.fontWeight)
     for i=1, 12 do
         local damage = container:GetNamedChild('damage' .. i)
         local label = container:GetNamedChild('label' .. i)
@@ -24,6 +28,37 @@ local function updateBar()
     end
 end
 
+local function updateSize()
+    local container = HodorRestyleContainer:GetNamedChild('container')
+    local topBar = container:GetNamedChild('topBar')
+    local damageLabel = container:GetNamedChild('damageLabel')
+    local timer = container:GetNamedChild('timer')
+    local bottomBar = container:GetNamedChild('bottomBar')
+    container:SetDimensions(HR.savedVariables.barWidth + HR.savedVariables.barHeight + 6, ((HR.savedVariables.barHeight + 2) * 12) + HR.savedVariables.barHeight)
+    topBar:SetDimensions(HR.savedVariables.barWidth + HR.savedVariables.barHeight + 6, HR.savedVariables.barHeight)
+    damageLabel:SetDimensions(HR.savedVariables.barWidth * 0.75, HR.savedVariables.barHeight)
+    timer:SetDimensions(HR.savedVariables.barWidth * 0.5, HR.savedVariables.barHeight)
+    bottomBar:SetDimensions(HR.savedVariables.barWidth + HR.savedVariables.barHeight + 6, (HR.savedVariables.barHeight + 2) * 12)
+    for i=1, 12 do
+        local backgroundOutline = container:GetNamedChild('backgroundOutline' .. i)
+        local background = container:GetNamedChild('background' .. i)
+        local iconBackground = container:GetNamedChild('iconBackground' .. i)
+        local icon = container:GetNamedChild('icon' .. i)
+        local bar = container:GetNamedChild('bar' .. i)
+        local damage = container:GetNamedChild('damage' .. i)
+        local label = container:GetNamedChild('label' .. i)
+        backgroundOutline:SetDimensions(HR.savedVariables.barWidth + HR.savedVariables.barHeight + 6, HR.savedVariables.barHeight + 4)
+        backgroundOutline:ClearAnchors()
+        backgroundOutline:SetAnchor(TOP, bottomBar, TOP, 0, (HR.savedVariables.barHeight+2) * (i-1))
+        background:SetDimensions(HR.savedVariables.barWidth + HR.savedVariables.barHeight + 2, HR.savedVariables.barHeight)
+        iconBackground:SetDimensions(HR.savedVariables.barHeight + 4, HR.savedVariables.barHeight + 4)
+        icon:SetDimensions(HR.savedVariables.barHeight, HR.savedVariables.barHeight)
+        bar:SetDimensions(HR.savedVariables.barWidth, HR.savedVariables.barHeight)
+        damage:SetDimensions(0.66*HR.savedVariables.barWidth, HR.savedVariables.barHeight)
+        label:SetDimensions(HR.savedVariables.barWidth * 0.66, HR.savedVariables.barHeight)
+    end
+end
+
 function HodorRestyle.InitializeSettings()
     local panelData = {
         type = "panel",
@@ -35,7 +70,7 @@ function HodorRestyle.InitializeSettings()
         registerForDefaults = false,
     }
 
-    LAM:RegisterAddonPanel("HodorRestyleSettings", panelData)
+
 
     local optionsTable = {}
 
@@ -46,28 +81,74 @@ function HodorRestyle.InitializeSettings()
     })
 
     table.insert(optionsTable, {
-        type = "button",
-        name = "Unlock UI",
-        func = function()
-            HodorRestyleContainer:SetMovable(HodorRestyleContainer:IsHidden())
-            HodorRestyleContainer:SetHidden(not HodorRestyleContainer:IsHidden())
-        end,
-        width = "half",
-    })
-
-    table.insert(optionsTable, {
         type = "dropdown",
         name = "Anchor to:",
         choices = LH.getTableKeys(LH.anchors),
         choicesValues = LH.getTableValues(LH.anchors),
-        getFunc = function() return HR.savedVariables.anchor end,
-        setFunc = function(var) HR.savedVariables.anchor = var
-            HR.savedVariables.xPosition = 0
-            HR.savedVariables.yPosition = 0
+        getFunc = function() return TOPLEFT end,
+        setFunc = function(var)
             HodorRestyleContainer:ClearAnchors()
-            HodorRestyleContainer:SetAnchor(HR.savedVariables.anchor, GuiRoot, HR.savedVariables.anchor, HR.savedVariables.xPosition, HR.savedVariables.yPosition)
+            HodorRestyleContainer:SetAnchor(var, GuiRoot, var, 0, 0)
+            HR.savedVariables.xPosition = HodorRestyleContainer:GetLeft()
+            HR.savedVariables.yPosition = HodorRestyleContainer:GetTop()
         end,
-        width = "half",
+        width = "full",
+    })
+
+    table.insert(optionsTable, {
+        type = "slider",
+        name = "X position",
+        min = 0,
+        max = screenWidth,
+        step = 1,	--(optional)
+        getFunc = function() return HR.savedVariables.xPosition end,
+        setFunc = function(value) HR.savedVariables.xPosition = value
+            HodorRestyleContainer:ClearAnchors()
+            HodorRestyleContainer:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, HR.savedVariables.xPosition, HR.savedVariables.yPosition)
+        end,
+        width = "half",	--or "half" (optional)
+        reference = 'HodorRestyleXSlider',	--unique global reference to control (optional)
+    })
+
+    table.insert(optionsTable, {
+        type = "slider",
+        name = "Y position",
+        min = 0,
+        max = screenHeight,
+        step = 1,	--(optional)
+        getFunc = function() return HR.savedVariables.yPosition end,
+        setFunc = function(value) HR.savedVariables.yPosition = value
+            HodorRestyleContainer:ClearAnchors()
+            HodorRestyleContainer:SetAnchor(TOPLEFT, GuiRoot, TOPLEFT, HR.savedVariables.xPosition, HR.savedVariables.yPosition)
+        end,
+        width = "half",	--or "half" (optional)
+        reference = 'HodorRestyleYSlider',	--unique global reference to control (optional)
+    })
+
+    table.insert(optionsTable, {
+        type = "slider",
+        name = "Bar Width",
+        min = 160,
+        max = 460,
+        step = 1,	--(optional)
+        getFunc = function() return HR.savedVariables.barWidth end,
+        setFunc = function(value) HR.savedVariables.barWidth = value
+            updateSize()
+        end,
+        width = "half",	--or "half" (optional)
+    })
+
+    table.insert(optionsTable, {
+        type = "slider",
+        name = "Bar Height",
+        min = 16,
+        max = 64,
+        step = 1,	--(optional)
+        getFunc = function() return HR.savedVariables.barHeight end,
+        setFunc = function(value) HR.savedVariables.barHeight = value
+            updateSize()
+        end,
+        width = "half",	--or "half" (optional)
     })
 
     table.insert(optionsTable, {
@@ -123,5 +204,17 @@ function HodorRestyle.InitializeSettings()
     })
 	
     LAM:RegisterOptionControls("HodorRestyleSettings", optionsTable)
+    local hodorRestylePanel = LAM:RegisterAddonPanel("HodorRestyleSettings", panelData)
 
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelOpened", function(panel)
+        if panel ~= hodorRestylePanel then return end
+        HodorRestyleContainer:SetHidden(false)
+        HodorRestyleContainer:SetMovable(true)
+    end)
+
+    CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)
+        if panel ~= hodorRestylePanel then return end
+        HodorRestyleContainer:SetHidden(true)
+        HodorRestyleContainer:SetMovable(false)
+    end)
 end

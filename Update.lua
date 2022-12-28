@@ -1,5 +1,6 @@
 local HRF = HodorReflexes
 local LH = LibHyper
+local HR = HodorRestyle
 
 local function newUpdateDamage()
 
@@ -62,10 +63,10 @@ local function newUpdateDamage()
             else -- boss fight
                 damage:SetText(dmg/10 .. 'k (' .. dps .. 'K)')
             end
-
-            bar:SetDimensions(284 * (dmg/10)/maxDps, 32)
-            bar:SetTextureCoords(0,dps/maxDps,0,1)
-            bar:SetColor(unpack(LH.classColors[GetUnitClassId('group' .. groupMemberNumber)]))
+            local classId = GetUnitClassId('group' .. groupMemberNumber) or 0
+            bar:SetDimensions(HR.savedVariables.barWidth * (dmg/10)/maxDps, HR.savedVariables.barHeight)
+            bar:SetTextureCoords(0,(dmg/10)/maxDps,0,1)
+            bar:SetColor(unpack(LH.classColors[classId]))
 
             backgroundOutline:SetHidden(false)
             background:SetHidden(false)
