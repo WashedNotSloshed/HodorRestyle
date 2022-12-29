@@ -1,8 +1,8 @@
-## APIVersion: 101033
+## APIVersion: 101036
 ## Title: HodorRestyle
-## Version: 0.1
+## Version: 1.0
 ## Author: Hyperioxes
-## Description: Hodor Restyle
+## Description: Changes appearance of Hodor dps list
 ## SavedVariables: HodorRestyleSV
 ## DependsOn: LibAddonMenu-2.0 LibHyper HodorReflexes
 

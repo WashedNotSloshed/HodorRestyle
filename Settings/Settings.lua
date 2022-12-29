@@ -65,7 +65,7 @@ function HodorRestyle.InitializeSettings()
         name = "HodorRestyle",
         displayName = "HodorRestyle",
         author = "Hyperioxes",
-        version = "0.1",
+        version = HR.version,
         registerForRefresh = true,
         registerForDefaults = false,
     }
