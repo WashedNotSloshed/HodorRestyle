@@ -202,6 +202,41 @@ function HodorRestyle.InitializeSettings()
             updateBar()
         end,
     })
+
+    table.insert(optionsTable, {
+        type = "header",
+        name = "Other",
+        width = "full",
+    })
+
+    table.insert(optionsTable, {
+        type = "dropdown",
+        name = "Icon Type:",
+        choices = {'Hodor', 'Class', 'Class and Role'},
+        choicesValues = {'hodor', 'class', 'classRole'},
+        getFunc = function() return HR.savedVariables.iconType end,
+        setFunc = function(var) HR.savedVariables.iconType = var
+        end,
+    })
+
+    table.insert(optionsTable, {
+        type = "dropdown",
+        name = "Text Color:",
+        choices = {'Hodor', 'Always White'},
+        choicesValues = {'hodor', 'white'},
+        getFunc = function() return HR.savedVariables.textColor end,
+        setFunc = function(var) HR.savedVariables.textColor = var
+        end,
+    })
+
+    table.insert(optionsTable, {
+        type = "checkbox",
+        name = "Hide out of combat",
+        width = "full",
+        getFunc = function() return HR.savedVariables.hideOutOfCombat end,
+        setFunc = function(var) HR.savedVariables.hideOutOfCombat = var
+        end,
+    })
 	
     LAM:RegisterOptionControls("HodorRestyleSettings", optionsTable)
     local hodorRestylePanel = LAM:RegisterAddonPanel("HodorRestyleSettings", panelData)

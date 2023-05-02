@@ -2,10 +2,87 @@ local HRF = HodorReflexes
 local LH = LibHyper
 local HR = HodorRestyle
 
+local classRoleIcons = {
+    [1] = { --Dragonknight
+        [0] = '/esoui/art/icons/ability_dragonknight_009.dds', --None
+        [1] = '/esoui/art/icons/ability_dragonknight_001_b.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_dragonknight_007_b.dds', --Tank
+        [4] = '/esoui/art/icons/ability_dragonknight_002_b.dds', --Healer'
+    },
+    [2] = { --Sorcerer
+        [0] = '/esoui/art/icons/ability_sorcerer_bolt_escape.dds', --None
+        [1] = '/esoui/art/icons/ability_sorcerer_thunderstomp.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_sorcerer_unstable_clannfear.dds', --Tank
+        [4] = '/esoui/art/icons/ability_sorcerer_storm_prey_summoned.dds', --Healer'
+    },
+    [3] = { --Nightblade
+        [0] = '/esoui/art/icons/ability_nightblade_004_b.dds', --None
+        [1] = '/esoui/art/icons/ability_nightblade_007_a.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_nightblade_013_a.dds', --Tank
+        [4] = '/esoui/art/icons/ability_nightblade_012_b.dds', --Healer'
+    },
+    [4] = { --Warden
+        [0] = '/esoui/art/icons/ability_warden_018.dds', --None
+        [1] = '/esoui/art/icons/ability_warden_013_a.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_warden_002.dds', --Tank
+        [4] = '/esoui/art/icons/ability_warden_008.dds', --Healer
+    },
+    [5] = { --Necromancer
+        [0] = '/esoui/art/icons/ability_necromancer_003.dds', --None
+        [1] = '/esoui/art/icons/ability_necromancer_001.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_necromancer_008_b.dds', --Tank
+        [4] = '/esoui/art/icons/ability_necromancer_013.dds', --Healer'
+    },
+    [6] = { --Templar
+        [0] = '/esoui/art/icons/ability_templar_returning_spear.dds', --None
+        [1] = '/esoui/art/icons/ability_templar_over_exposure.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_templar_radiant_ward.dds', --Tank
+        [4] = '/esoui/art/icons/ability_templar_breath_of_life.dds', --Healer'
+    }
+
+}
+
+
+local iconTypeFunctions = {
+    ['hodor'] = function(groupMemberName, groupMemberNumber, icon)
+        if HRF.users[groupMemberName] and HRF.users[groupMemberName][3] then
+            icon:SetTexture(HRF.users[groupMemberName][3])
+        else
+            icon:SetTexture('/esoui/art/icons/class/gamepad/gp_class_' .. GetUnitClass('group' .. groupMemberNumber) .. '.dds')
+        end
+    end,
+    ['class'] = function(_, groupMemberNumber, icon)
+        icon:SetTexture('/esoui/art/icons/class/gamepad/gp_class_' .. GetUnitClass('group' .. groupMemberNumber) .. '.dds')
+    end,
+    ['classRole'] = function(_, groupMemberNumber, icon)
+        icon:SetTexture(classRoleIcons[GetUnitClassId('group' .. groupMemberNumber)][GetGroupMemberSelectedRole('group' .. groupMemberNumber)])
+    end,
+}
+
+local textColorFunctions = {
+    ['hodor'] = function(groupMemberName, label, i)
+        if HRF.users[groupMemberName] and HRF.users[groupMemberName][2] then
+            label:SetText(i .. '. ' .. HRF.users[groupMemberName][2])
+        else
+            label:SetText(i .. '. ' .. groupMemberName:sub(2)) --FIXME remove the @
+        end
+    end,
+    ['white'] = function (groupMemberName, label, i)
+        label:SetText(i .. '. ' .. groupMemberName:sub(2)) --FIXME remove the @
+    end,
+}
+
 local function newUpdateDamage()
 
     local container = HodorRestyleContainer:GetNamedChild('container')
     local timer = container:GetNamedChild('timer')
+
+    if IsUnitInCombat("player") or not HR.savedVariables.hideOutOfCombat then
+        container:SetHidden(false)
+    else
+        container:SetHidden(true)
+        return
+    end
 
     local maxDps = 0
     local filteredTable = {}
@@ -46,17 +123,8 @@ local function newUpdateDamage()
             local groupMemberName = filteredTable[i].groupMemberName
             local groupMemberNumber = filteredTable[i].groupMemberNumber
 
-            if HRF.users[groupMemberName] and HRF.users[groupMemberName][2] then
-                label:SetText(i .. '. ' .. HRF.users[groupMemberName][2])
-            else
-                label:SetText(i .. '. ' .. groupMemberName:sub(2)) --FIXME remove the @
-            end
-
-            if HRF.users[groupMemberName] and HRF.users[groupMemberName][3] then
-                icon:SetTexture(HRF.users[groupMemberName][3])
-            else
-                icon:SetTexture('/esoui/art/icons/class/gamepad/gp_class_' .. GetUnitClass('group' .. groupMemberNumber) .. '.dds')
-            end
+            textColorFunctions[HR.savedVariables.textColor](groupMemberName, label, i)
+            iconTypeFunctions[HR.savedVariables.iconType](groupMemberName, groupMemberNumber, icon)
 
             if dmgType == 1 then -- total damage
                 damage:SetText(dmg/100 .. 'M || ' .. dps .. 'K')

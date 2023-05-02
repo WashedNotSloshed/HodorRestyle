@@ -12,4 +12,8 @@ HodorRestyle.defaultSavedVariables = {
 
     barTexture = 'LibHyper/barTextures/GradientBar2.dds',
     backgroundBarTexture = 'LibHyper/barTextures/GradientBar2.dds',
+
+    hideOutOfCombat = false,
+    iconType = 'hodor',
+    textColor = 'hodor',
 }
