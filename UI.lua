@@ -130,3 +130,9 @@ function HR.InitializeUI()
         HodorRestyleYSlider:UpdateValue()
     end)
 end
+
+function HR.registerChangingVisibilityOnCombatChange()
+    EVENT_MANAGER:RegisterForEvent(HR.name .. "CombatState", EVENT_PLAYER_COMBAT_STATE, function()
+        HodorRestyleContainer:SetHidden(HR.savedVariables.hideOutOfCombat and not IsUnitInCombat('player'))
+    end)
+end

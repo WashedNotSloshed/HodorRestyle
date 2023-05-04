@@ -1,20 +1,24 @@
+local HR = HodorRestyle
+
 function OnAddOnLoaded(_, addonName)
-    if addonName ~= HodorRestyle.name then
+    if addonName ~= HR.name then
         return
     end
-    EVENT_MANAGER:UnregisterForEvent(HodorRestyle.name, EVENT_ADD_ON_LOADED)
+    EVENT_MANAGER:UnregisterForEvent(HR.name, EVENT_ADD_ON_LOADED)
 
     --initialize saved variables
-    HodorRestyle.savedVariables = ZO_SavedVars:NewAccountWide("HodorRestyleSV", 1, nil, HodorRestyle.defaultSavedVariables)
+    HR.savedVariables = ZO_SavedVars:NewAccountWide("HodorRestyleSV", 1, nil, HR.defaultSavedVariables)
 
-    HodorRestyle.InitializeUI()
+    HR.InitializeUI()
 
     --initialize settings
-    HodorRestyle.InitializeSettings()
+    HR.InitializeSettings()
 
-    HodorRestyle.hookUpdateDamage()
+    HR.hookUpdateDamage()
     HodorReflexes_Share_Damage:SetAlpha(0) --hide original hodorReflexes
+
+    HR.registerChangingVisibilityOnCombatChange()
 end
 
-EVENT_MANAGER:RegisterForEvent(HodorRestyle.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
+EVENT_MANAGER:RegisterForEvent(HR.name, EVENT_ADD_ON_LOADED, OnAddOnLoaded)
 
