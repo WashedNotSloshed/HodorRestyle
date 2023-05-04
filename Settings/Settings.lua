@@ -193,15 +193,39 @@ function HodorRestyle.InitializeSettings()
     })
 
     table.insert(optionsTable, {
-        type = "dropdown",
+        type = "iconpicker",
         name = "Bar Texture:",
-        choices = LH.getTableKeys(LH.barTextures),
-        choicesValues = LH.getTableValues(LH.barTextures),
+        choices = LH.getTableValues(LH.barTextures),
+        iconSize = 64,
+        maxColumns = 3,
+        visibleRows = 3,
         getFunc = function() return HR.savedVariables.barTexture end,
         setFunc = function(var) HR.savedVariables.barTexture = var
             updateBar()
+            for i=1, 6 do
+                _G['HodorRestyleBarTexturePreview'..i].texture:SetTexture(HR.savedVariables.barTexture)
+            end
         end,
     })
+
+    for i=1, 6 do
+        table.insert(optionsTable, {
+            type = "description",
+            title = GetClassName(GENDER_MALE , i),
+            width = "half",	--or "half" (optional)
+        })
+
+        table.insert(optionsTable, {
+            type = "texture",
+            image = HR.savedVariables.barTexture,
+            imageWidth = 250,	--max of 250 for half width, 510 for full
+            imageHeight = 32,	--max of 100
+            width = "half",	--or "half" (optional)
+            reference = 'HodorRestyleBarTexturePreview'..i,	--unique global reference to control (optional)
+        })
+
+
+    end
 
     table.insert(optionsTable, {
         type = "header",
@@ -237,7 +261,7 @@ function HodorRestyle.InitializeSettings()
         setFunc = function(var) HR.savedVariables.hideOutOfCombat = var
         end,
     })
-	
+
     LAM:RegisterOptionControls("HodorRestyleSettings", optionsTable)
     local hodorRestylePanel = LAM:RegisterAddonPanel("HodorRestyleSettings", panelData)
 
@@ -245,6 +269,9 @@ function HodorRestyle.InitializeSettings()
         if panel ~= hodorRestylePanel then return end
         HodorRestyleContainer:SetHidden(false)
         HodorRestyleContainer:SetMovable(true)
+        for i=1, 6 do
+            _G['HodorRestyleBarTexturePreview'..i].texture:SetColor(unpack(LH.classColors[i]))
+        end
     end)
 
     CALLBACK_MANAGER:RegisterCallback("LAM-PanelClosed", function(panel)

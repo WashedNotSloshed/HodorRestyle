@@ -1,14 +1,14 @@
+local HR = HodorRestyle
+local LH = LibHyper
+local SM = SCENE_MANAGER
+
 local function onSceneChange(_,scene)
     if scene == SCENE_SHOWN then
-        HodorRestyleContainer:SetHidden(false)
+        HodorRestyleContainer:SetHidden(HR.savedVariables.hideOutOfCombat and not IsUnitInCombat('player'))
     else
         HodorRestyleContainer:SetHidden(true)
     end
 end
-
-local HR = HodorRestyle
-local LH = LibHyper
-local SM = SCENE_MANAGER
 
 function HR.InitializeUI()
     local WM = GetWindowManager()
@@ -16,7 +16,7 @@ function HR.InitializeUI()
 
     HodorRestyleContainer:SetMovable(false)
     HodorRestyleContainer:SetMouseEnabled(true)
-    HodorRestyleContainer:SetHidden(false)
+    HodorRestyleContainer:SetHidden(HR.savedVariables.hideOutOfCombat and not IsUnitInCombat('player'))
     HodorRestyleContainer:SetResizeToFitDescendents(true)
 
     local container = WM:CreateControl("$(parent)container", HodorRestyleContainer, CT_CONTROL)
