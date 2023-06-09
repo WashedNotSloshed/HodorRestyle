@@ -2,7 +2,7 @@ local HRF = HodorReflexes
 local LH = LibHyper
 local HR = HodorRestyle
 
-local classRoleIcons = {
+local classRoleIcons = { --FIXME should move that somewhere else
     [1] = { --Dragonknight
         [0] = '/esoui/art/icons/ability_dragonknight_009.dds', --None
         [1] = '/esoui/art/icons/ability_dragonknight_001_b.dds', --Damage Dealer
@@ -38,6 +38,12 @@ local classRoleIcons = {
         [1] = '/esoui/art/icons/ability_templar_over_exposure.dds', --Damage Dealer
         [2] = '/esoui/art/icons/ability_templar_radiant_ward.dds', --Tank
         [4] = '/esoui/art/icons/ability_templar_breath_of_life.dds', --Healer'
+    },
+    [117] = { --Arcanist
+        [0] = '/esoui/art/icons/ability_arcanist_001.dds', --None
+        [1] = '/esoui/art/icons/ability_arcanist_006_b.dds', --Damage Dealer
+        [2] = '/esoui/art/icons/ability_arcanist_008_b.dds', --Tank
+        [4] = '/esoui/art/icons/ability_arcanist_013_b.dds', --Healer'
     }
 
 }
@@ -123,15 +129,18 @@ local function newUpdateDamage()
             local groupMemberName = filteredTable[i].groupMemberName
             local groupMemberNumber = filteredTable[i].groupMemberNumber
 
+            local classId = GetUnitClassId('group' .. groupMemberNumber) or 0
             textColorFunctions[HR.savedVariables.textColor](groupMemberName, label, i)
-            iconTypeFunctions[HR.savedVariables.iconType](groupMemberName, groupMemberNumber, icon)
+            if classId ~= 0 then
+                iconTypeFunctions[HR.savedVariables.iconType](groupMemberName, groupMemberNumber, icon)
+            end
 
             if dmgType == 1 then -- total damage
                 damage:SetText(dmg/100 .. 'M || ' .. dps .. 'K')
             else -- boss fight
                 damage:SetText(dmg/10 .. 'k (' .. dps .. 'K)')
             end
-            local classId = GetUnitClassId('group' .. groupMemberNumber) or 0
+
             bar:SetDimensions(HR.savedVariables.barWidth * (dmg/10)/maxDps, HR.savedVariables.barHeight)
             bar:SetTextureCoords(0,(dmg/10)/maxDps,0,1)
             bar:SetColor(unpack(LH.classColors[classId]))

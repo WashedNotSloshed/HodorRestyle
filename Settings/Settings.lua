@@ -208,10 +208,10 @@ function HodorRestyle.InitializeSettings()
         end,
     })
 
-    for i=1, 6 do
+    for _,v in pairs(LH.classIds) do
         table.insert(optionsTable, {
             type = "description",
-            title = GetClassName(GENDER_MALE , i),
+            title = GetClassName(GENDER_MALE , v),
             width = "half",	--or "half" (optional)
         })
 
@@ -221,7 +221,7 @@ function HodorRestyle.InitializeSettings()
             imageWidth = 250,	--max of 250 for half width, 510 for full
             imageHeight = 32,	--max of 100
             width = "half",	--or "half" (optional)
-            reference = 'HodorRestyleBarTexturePreview'..i,	--unique global reference to control (optional)
+            reference = 'HodorRestyleBarTexturePreview'..v,	--unique global reference to control (optional)
         })
 
 
@@ -269,8 +269,9 @@ function HodorRestyle.InitializeSettings()
         if panel ~= hodorRestylePanel then return end
         HodorRestyleContainer:SetHidden(false)
         HodorRestyleContainer:SetMovable(true)
-        for i=1, 6 do
-            _G['HodorRestyleBarTexturePreview'..i].texture:SetColor(unpack(LH.classColors[i]))
+
+        for _,v in pairs(LH.classIds) do
+            _G['HodorRestyleBarTexturePreview'..v].texture:SetColor(unpack(LH.classColors[v]))
         end
     end)
 
