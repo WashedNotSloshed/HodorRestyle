@@ -62,14 +62,14 @@ local iconTypeFunctions = {
         if Icons.GetStatic(groupMemberName) ~= nil then
             icon:SetTexture(Icons.GetStatic(groupMemberName))
         else
-            icon:SetTexture(classRoleIcons[classId][1])
+            icon:SetTexture(classRoleIcons[classId][0])
         end
     end,
     ['class'] = function(_, groupMemberNumber, icon, classId)
-        icon:SetTexture(classRoleIcons[classId][1])
+        icon:SetTexture(classRoleIcons[classId][0])
     end,
     ['classRole'] = function(_, groupMemberNumber, icon, classId)
-        icon:SetTexture(classRoleIcons[classId][1])
+        icon:SetTexture(classRoleIcons[classId][0])
     end,
 }
 
